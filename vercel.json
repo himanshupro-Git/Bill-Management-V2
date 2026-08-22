@@ -1,0 +1,5 @@
+{
+  "installCommand": "npm --prefix Bill-Manager install",
+  "buildCommand": "npm --prefix Bill-Manager run build",
+  "outputDirectory": "Bill-Manager/dist"
+}

@@ -3,7 +3,6 @@ import './InputBox.css';
 export default function InputBox({
   name,
   price,
-  setPrice,
   quantity,
   setQuantity,
   handleAdd,

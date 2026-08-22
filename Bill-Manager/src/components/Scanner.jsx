@@ -3,8 +3,13 @@ import { Html5Qrcode } from 'html5-qrcode';
 
 export default function Scanner({ onScan, onClose }) {
   const scannerRef = useRef(null);
+  const onScanRef = useRef(onScan);
   const stoppedRef = useRef(false);
   const scannedRef = useRef(false);
+
+  useEffect(() => {
+    onScanRef.current = onScan;
+  }, [onScan]);
 
   useEffect(() => {
     let scanner = null;
@@ -28,7 +33,7 @@ export default function Scanner({ onScan, onClose }) {
             if (!mounted || scannedRef.current) return;
 
             scannedRef.current = true;
-            onScan(decodedText);
+            onScanRef.current(decodedText);
           },
           () => {
             // Ignore failed scan attempts
