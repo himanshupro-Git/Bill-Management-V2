@@ -4,6 +4,7 @@ import InputBox from './components/InputBox';
 import ListItem from './components/ListItem';
 import Totalbill from './components/Totalbill';
 import products from './data/products.json';
+import Scanner from './components/Scanner';
 
 function App() {
   const [name, setName] = useState("");
@@ -12,6 +13,7 @@ function App() {
   const [items, setItems] = useState([]);
   const [suggestion, setSuggestion] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showScanner, setShowScanner] = useState(false);
 
   // Total number of items
   const itemCount = items.reduce(
@@ -106,12 +108,15 @@ function App() {
 
   // Handle a barcode value
   function handleBarcode(value) {
-    const product = findProduct(value);
+  const product = findProduct(value);
 
-    if (product) {
-      selectProduct(product);
-    }
+  if (product) {
+    selectProduct(product);
+    setShowScanner(false);
+  } else {
+    alert("Product not found");
   }
+}
 
   return (
     <div className="outerMainBox">
@@ -122,14 +127,13 @@ function App() {
 
         <InputBox
           name={name}
-          setName={setName}
-          price={price}
           setPrice={setPrice}
+          price={price}
           quantity={quantity}
           setQuantity={setQuantity}
           handleAdd={handleAdd}
           handleNameChange={handleNameChange}
-          suggestion={suggestion}
+          handleBarcode={() => setShowScanner(true)}
         />
 
         <div className="suggestion">
@@ -158,6 +162,13 @@ function App() {
         tax={tax}
         total={total}
       />
+
+        {showScanner && (
+        <Scanner
+        onScan={handleBarcode}
+        onClose={() => setShowScanner(false)}
+        />
+        )}
 
     </div>
   );
