@@ -3,23 +3,15 @@ import { Html5Qrcode } from 'html5-qrcode';
 
 export default function Scanner({ onScan, onClose }) {
   const scannerRef = useRef(null);
-  const onScanRef = useRef(onScan);
-  const stoppedRef = useRef(false);
-  const scannedRef = useRef(false);
+  const isRunningRef = useRef(false);
+  const hasScannedRef = useRef(false);
 
   useEffect(() => {
-    onScanRef.current = onScan;
-  }, [onScan]);
-
-  useEffect(() => {
-    let scanner = null;
-    let mounted = true;
+    const scanner = new Html5Qrcode("reader");
+    scannerRef.current = scanner;
 
     async function startScanner() {
       try {
-        scanner = new Html5Qrcode("reader");
-        scannerRef.current = scanner;
-
         await scanner.start(
           { facingMode: "environment" },
           {
@@ -30,46 +22,39 @@ export default function Scanner({ onScan, onClose }) {
             }
           },
           (decodedText) => {
-            if (!mounted || scannedRef.current) return;
+            if (hasScannedRef.current) return;
 
-            scannedRef.current = true;
-            onScanRef.current(decodedText);
+            hasScannedRef.current = true;
+            onScan(decodedText);
           },
           () => {
             // Ignore failed scan attempts
           }
         );
 
-        // If React already unmounted while camera was starting,
-        // immediately stop this scanner.
-        if (!mounted) {
-          await scanner.stop();
-          await scanner.clear();
-          return;
-        }
-
-        stoppedRef.current = false;
-
+        isRunningRef.current = true;
+        console.log("Scanner started");
       } catch (error) {
-        if (mounted) {
-          console.error("Scanner error:", error);
-        }
+        console.error("Scanner start error:", error);
       }
     }
 
     startScanner();
 
     return () => {
-      mounted = false;
+      const currentScanner = scannerRef.current;
 
-      const currentScanner = scanner;
+      if (!currentScanner) return;
 
-      if (currentScanner) {
+      if (isRunningRef.current) {
         currentScanner
           .stop()
-          .catch(() => {})
-          .finally(() => {
-            currentScanner.clear().catch(() => {});
+          .then(() => {
+            isRunningRef.current = false;
+            return currentScanner.clear();
+          })
+          .catch((error) => {
+            console.error("Scanner cleanup error:", error);
           });
       }
     };
@@ -78,17 +63,31 @@ export default function Scanner({ onScan, onClose }) {
   async function handleClose() {
     const scanner = scannerRef.current;
 
-    try {
-      if (scanner && !stoppedRef.current) {
-        stoppedRef.current = true;
-        await scanner.stop();
-        await scanner.clear();
-      }
-    } catch (error) {
-      console.error("Error closing scanner:", error);
+    if (!scanner) {
+      onClose();
+      return;
     }
 
-    onClose();
+    try {
+      if (isRunningRef.current) {
+        await scanner.stop();
+        isRunningRef.current = false;
+      }
+
+      await scanner.clear();
+
+      // Prevent cleanup from using this scanner again
+      scannerRef.current = null;
+
+      onClose();
+    } catch (error) {
+      console.error("Close scanner error:", error);
+
+      scannerRef.current = null;
+      isRunningRef.current = false;
+
+      onClose();
+    }
   }
 
   return (
