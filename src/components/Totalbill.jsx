@@ -17,7 +17,7 @@ export default function Totalbill({itemCount, subtotal, tax, total}){
 
             <p className='totalItems'>Total Items: {itemCount}</p>
             <p className='Subtotal'>Subtotal: ₹{(subtotal || 0).toFixed(2)}</p>
-            <p className='tax'>Tax (30%): ₹{(tax || 0).toFixed(2)}</p>
+            <p className='tax'>GST: ₹{(tax || 0).toFixed(2)}</p>
             <div className='line'></div>
             <p className='total'>Total: ₹{(total || 0).toFixed(2)}</p>
         </div>

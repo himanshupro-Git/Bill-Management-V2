@@ -69,7 +69,23 @@ function App() {
       category: selectedProduct?.category || "Other"
     };
 
-    setItems([...items, newProduct]);
+    // Check if this product is already in the cart
+    const existingIndex = items.findIndex(
+      (item) => item.id === newProduct.id
+    );
+
+    if (existingIndex !== -1) {
+      // Same product: increase quantity of the existing row
+      const updatedItems = items.map((item, index) =>
+        index === existingIndex
+          ? { ...item, quantity: item.quantity + newProduct.quantity }
+          : item
+      );
+      setItems(updatedItems);
+    } else {
+      // New product: add as a separate row
+      setItems([...items, newProduct]);
+    }
 
     setName("");
     setPrice("");
