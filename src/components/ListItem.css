@@ -33,3 +33,9 @@
     justify-content: space-around;
     
 }
+
+.qtyButton {
+  margin: 0 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+}

@@ -103,6 +103,19 @@ function App() {
     setItems(updatedItems);
   }
 
+  // Change quantity of a cart item by +1 or -1 (never below 1)
+function handleQuantityChange(indexToChange, change) {
+  const updatedItems = items.map((item, index) =>
+    index === indexToChange
+      ? { ...item, quantity: Math.max(1, item.quantity + change) }
+      : item
+  );
+
+  setItems(updatedItems);
+}
+
+
+
   // Search products by name
   function handleNameChange(value) {
     setName(value);

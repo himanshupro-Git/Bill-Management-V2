@@ -1,0 +1,22 @@
+.scannerStatus {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin: 8px 0;
+}
+
+.scannerStatusRunning {
+  color: #0a7d32;
+  font-weight: 600;
+}
+
+.scannerError {
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c2be;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+  text-align: center;
+}
